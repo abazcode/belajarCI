@@ -21,13 +21,11 @@ jobs:
 
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-        # Menyalin file .env.example jika tidak ada file .env
 
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
           echo "dir=$(composer config cache-files-dir)" >> $GITHUB_ENV
-        # Mendapatkan direktori cache Composer
 
       - name: Cache Composer Dependencies
         uses: actions/cache@v3
@@ -36,29 +34,23 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
-        # Menggunakan cache untuk dependensi Composer
 
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-        # Menginstal dependensi proyek Laravel
 
       - name: Generate key
         run: php artisan key:generate
-        # Membuat kunci aplikasi Laravel
 
       - name: Directory Permissions
         run: chmod -R 777 storage bootstrap/cache
-        # Mengatur izin direktori untuk penyimpanan dan cache
 
       - name: Create Database
         run: |
           mkdir -p database
           touch database/database.sqlite
-        # Membuat database SQLite
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
         run: vendor/bin/phpunit
-        # Menjalankan pengujian menggunakan PHPUnit
